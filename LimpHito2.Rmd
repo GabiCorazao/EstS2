@@ -1,0 +1,200 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+-------
+BASE DE DATOS 1
+-------
+
+Importar la data
+
+```{r}
+library(rio)
+
+AccesoJ="https://github.com/GabiCorazao/EstS2/raw/Trabajo/Acceso-Justicia(original).csv"
+AccesoJ=import(AccesoJ)
+
+names(AccesoJ)
+```
+
+Limpiar la data
+
+Buscando las filas y columnas que no deben estar incluidos
+
+```{r}
+?grep
+AccesoJ[grep("ALL",AccesoJ$REGION),]
+
+?grep
+AccesoJ[,grep("REGION|Region|LOCATION|INC|Income|VAR|TIME|Year|Flags|Flag Codes",names(AccesoJ))]
+
+```
+
+Eliminando los datos que no deben estar incluidos
+
+```{r}
+AccesoJ=AccesoJ[-grep("ALL",AccesoJ$REGION),]
+AccesoJ=AccesoJ[,-grep("REGION|Region|LOCATION|INC|Income|VAR|TIME|Year|Flags|Flag Codes",names(AccesoJ))]
+```
+
+Tambien se van a eliminar las filas que corresponden a la variable "LAW"
+
+```{r}
+?grep
+AccesoJ[grep("Law",AccesoJ$Variable),]
+
+AccesoJ=AccesoJ[-grep("Law",AccesoJ$Variable),]
+
+#Ya que esta hecho, voy a quitar la columna variables y voy a renonmbrar la columna "Value"
+AccesoJ=AccesoJ[,-grep("Variable",names(AccesoJ))]
+
+#cambiando el nombre
+names(AccesoJ) = c("Country", "Practice")
+
+```
+
+Ahora voy a verificar si hay datos duplicados
+```{r}
+AccesoJ[duplicated(AccesoJ$Country),]
+AccesoJ=AccesoJ[!duplicated(AccesoJ$Country),]
+```
+
+
+Verificamos si los valores son leidos como numeros o como caracteres
+```{r}
+str(AccesoJ)
+#como es leido como numerico, ya no hace falta formatear nada, nuestra data esta lista!
+```
+
+
+
+------
+BASE DE DATOS 2 
+------
+
+Primero traemos la data
+```{r}
+library(rio)
+
+SecundariaC="https://github.com/GabiCorazao/EstS2/blob/Trabajo/Secundaria-Completa(original).xlsx?raw=true"
+SecundariaC=import(SecundariaC)
+
+names(SecundariaC)
+```
+
+Voy a quitar algunas filas y columnas que he identificado que no me sirven
+
+```{r}
+#identificando las filas que no me sirven
+SecundariaC$`Table 5. Gender Inequality Index`
+
+#eliminando las filas y columnas que no me sirven
+SecundariaC=SecundariaC[-c(1:7, 70, 125, 163, 200, 207:263),]
+SecundariaC=SecundariaC[,-c(1,3:12,14:20)]
+
+```
+
+Ahora voy a renombrar mis columnas 
+
+```{r}
+names(SecundariaC) = c("Country", "SecundariaCompleta")
+
+#y voy a verificar que funcionen y revisar de nuevo si hay alguna unidad que deba ser limpiada
+SecundariaC$Country
+```
+
+Aparentemente ya esta listo, pero no!! aun falta verificar si los datos se leen como numericos
+
+```{r}
+str(SecundariaC)
+
+#tenemos que convertir a numericos los datos de la segunda columna 
+SecundariaC$SecundariaCompleta=as.numeric(SecundariaC$SecundariaCompleta)
+
+#verificamos
+str(SecundariaC)
+```
+
+Pd:Antes de convertir los datos a numerico habian como 14 decimales(si no mas) y despues de aplicar el codigo resultaron solo 7 decimales.
+
+
+---
+MERGING
+---
+```{r}
+Acceso_Secundaria=merge(AccesoJ,SecundariaC,all.x=T,all.y=T)
+
+Acceso_Secundaria[!complete.cases(Acceso_Secundaria),] 
+```
+
+Voy a modificar los nombres de paises que no estan iguales en ambas bases de datos 
+
+```{r}
+#AccesoJ
+AccesoJ[AccesoJ$Country=="CÃ´te d'Ivoire","Country"]="Côte d'Ivoire"
+AccesoJ[AccesoJ$Country=="Chinese Taipei","Country"]="China"
+AccesoJ[AccesoJ$Country=='Palestinian Authority or West Bank and Gaza Strip',"Country"]="Palestine, State of"
+
+#SecundariaC
+SecundariaC[SecundariaC$Country=='Bolivia (Plurinational State of)',"Country"]="Bolivia"
+SecundariaC[SecundariaC$Country=='Czechia',"Country"]="Czech Republic"
+SecundariaC[SecundariaC$Country=='Congo (Democratic Republic of the)',"Country"]="Democratic Republic of the Congo"
+SecundariaC[SecundariaC$Country=='Hong Kong, China (SAR)',"Country"]="Hong Kong, China"
+SecundariaC[SecundariaC$Country=='Iran (Islamic Republic of)',"Country"]="Iran"
+SecundariaC[SecundariaC$Country=='Moldova (Republic of)',"Country"]="Moldova"
+
+SecundariaC[SecundariaC$Country=='Russian Federation',"Country"]="Russia"
+SecundariaC[SecundariaC$Country=='Slovakia',"Country"]="Slovak Republic"
+SecundariaC[SecundariaC$Country=='South Sudan',"Country"]="South Sudan"
+SecundariaC[SecundariaC$Country=='Tanzania (United Republic of)',"Country"]="Tanzania"
+SecundariaC[SecundariaC$Country=='Venezuela (Bolivarian Republic of)',"Country"]="Venezuela"
+```
+
+Hacemos el merging nuevamente
+```{r}
+Acceso_Secundaria=merge(AccesoJ,SecundariaC,all.x=T,all.y=T)
+```
+
+Finalmente lo ultimo por hacer es exportar la base de datos
+
+```{r}
+
+library(rio)
+export(Acceso_Secundaria,"Acceso_Secundaria.csv")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
