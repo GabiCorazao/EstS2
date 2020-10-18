@@ -1,0 +1,87 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Llamando a la data
+```{r}
+library(rio)
+
+DF="https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/master/TRABAJO/basefinal.csv"
+DF=import(DF)
+
+names(DF)
+```
+
+Analisis descriptivo de las variables AccesoJ y SecundariaC
+```{r}
+library(psych)
+describeBy(DF$AccesoJ, digits=2)
+describeBy(DF$SecundariaC, digits=2)
+
+#para varias variables
+describeBy(as.matrix(cbind(DF[,c(7:8)])), digits = 2)
+
+#summary
+summary(DF[,c(7:8)])
+
+```
+
+Graficos pertinentes
+```{r}
+#boxplot
+boxplot(DF$AccesoJ, col = "lightgreen", main="Acceso a Justicia")
+boxplot(DF$SecundariaC, col = "lightgreen", main="Secundaria Completa")
+
+#histograma
+hist((DF$AccesoJ),col="lightblue",
+        xlab="Cantidad de paises",
+        ylab="Acceso a justicia",
+        main="Acceso a Justicia")
+hist((DF$SecundariaC),col="lightblue",
+        xlab="Cantidad de paises",
+        ylab="Promedio de mujeres con secundaria completa",
+        main="Promedio de mujeres con secundaria completa")
+```
+
+
+Analisis bivariado
+
+```{r}
+#Graficos de dispersion, analisis visual 
+plot(DF$DesigualdadGenero, DF$AccesoJ, xlab="Desigualdad de Genero", ylab="Acceso a Justicia")
+plot(DF$DesigualdadGenero, DF$SecundariaC, xlab="Desigualdad de Genero", ylab="Acceso a Justicia")
+```
+
+Analisis de correlacion
+```{r}
+cor.test(data$DesigualdadGenero, data$AccesoJ)
+cor.test(data$DesigualdadGenero, data$SecundariaC) 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
