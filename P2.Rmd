@@ -1,0 +1,99 @@
+---
+title: "R Notebook"
+output: html_notebook
+Pregunta: 2
+---
+```{r}
+library(psych) 
+library(knitr) 
+library(kableExtra)
+library(cluster)
+library(plyr)
+library(factoextra)
+library(stringr)
+library(magrittr)
+library(htmltab)
+library(readr)
+library(rio)
+library(dbscan)
+library(ggrepel)
+library(fpc)
+library(dplyr)
+library(foreign)
+library(car)
+```
+
+```{r}
+library(readxl)
+data <- read_excel("C:/Users/Lenovo/Downloads/seguridadUSA (1).xlsx")
+View(data)
+```
+
+
+```{r}
+row.names(data)=data$estado # cambiando row.names
+demo=na.omit(demo)
+data[,c(1,5)]=NULL
+set.seed(2020)
+g.dist = daisy(data, metric="gower")
+
+
+
+```
+
+```{r}
+#PAM o Particiones
+fviz_nbclust(data, pam,diss=g.dist,method = "gap_stat",k.max = 10,verbose = F)
+#HCUT o jerarquizacion
+fviz_nbclust(data, hcut,diss=g.dist,method = "gap_stat",k.max = 10,verbose = F)
+```
+
+```{r}
+#PAM o Particiones
+res.pam = pam(g.dist,3,cluster.only = F)
+#AGNES o aglomerativa
+res.agnes = hcut(g.dist, k = 3,hc_func='agnes',hc_method = "ward.D")
+#DIANA o divisiva
+res.diana = hcut(g.dist, k = 3,hc_func='diana')
+
+```
+
+```{r}
+#PAM
+fviz_silhouette(res.pam)
+#AGNES
+fviz_silhouette(res.agnes)
+#DIANA
+fviz_silhouette(res.diana)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

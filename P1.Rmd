@@ -1,0 +1,94 @@
+---
+title: "R Notebook"
+output: html_notebook
+Pregunta: 1
+---
+```{r}
+library(psych) 
+library(knitr) 
+library(kableExtra)
+library(cluster)
+library(plyr)
+library(factoextra)
+library(stringr)
+library(magrittr)
+library(htmltab)
+library(readr)
+library(rio)
+library(dbscan)
+library(ggrepel)
+library(fpc)
+library(dplyr)
+library(foreign)
+library(car)
+```
+
+
+```{r}
+library(rio)
+	link="https://github.com/PoliticayGobiernoPUCP/estadistica_anapol2/blob/master/seguridadUSA.xlsx"
+	data=import(link)
+
+```
+
+```{r}
+str(data)
+```
+
+
+```{r}
+row.names(data)=data$estado # cambiando row.names
+demo=na.omit(demo)
+data[,c(1,5)]=NULL
+set.seed(2020)
+g.dist = daisy(data, metric="gower")
+
+
+
+```
+
+```{r}
+#PAM o Particiones
+fviz_nbclust(data, pam,diss=g.dist,method = "gap_stat",k.max = 10,verbose = F)
+#HCUT o jerarquizacion
+fviz_nbclust(data, hcut,diss=g.dist,method = "gap_stat",k.max = 10,verbose = F)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
